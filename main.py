@@ -21,7 +21,6 @@ def main():
     pbar = tqdm(images)
     for i, file in enumerate(pbar):
         pbar.set_description("Processing %s" % file)
-        teacher = file[4:6]
         l = OCR(file)
         try:
             l = OCR(file)
@@ -29,7 +28,7 @@ def main():
             df = df.append(
                 pd.DataFrame([['-', '-', 0, 0, '', file]], columns=['fio', 'teacher', 'level', 'sum', 'err', 'filename']))
         else:
-            print(l.getTeacher())    
+            teacher = l.getTeacher()
             r = l.doCheck()
             newf = hashlib.md5(file.encode('utf-8')).hexdigest() + '.jpeg'
             cv2.imwrite('dst/' + newf, l.colorImg)
