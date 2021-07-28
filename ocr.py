@@ -80,7 +80,8 @@ class OCR:
                             4, 1, 2, 2, 1, 1, 2, 1, 4, 2, 2, 4, 4, 1, 2, 1, 2, 4, 2, 2,
                             1, 1, 2, 4, 4, 1, 1, 2, 4, 1, 1, 4, 4, 2, 8, 1, 2, 2, 4, 4]]
 
-    def __init__(self, file):
+    def __init__(self, file, data):
+        self.data_dir = data
         if not os.path.isfile(file):
             raise Exception('No file found')
         self.__initVars__()
@@ -93,7 +94,7 @@ class OCR:
             self.img = cv2.resize(self.img, (1700, 2800))
         # img = cv2.fastNlMeansDenoising(img)# img = img[:,:,0]#-img[:,:,0]
         self.network = DigitsNet()
-        self.network.load_state_dict(torch.load('data/digits.dict', map_location=torch.device('cpu')))
+        self.network.load_state_dict(torch.load(self.data_dir+'/digits.dict', map_location=torch.device('cpu')))
         self.network.eval()
         self.input_size = 224
         self.__preprocess__()
@@ -141,14 +142,14 @@ class OCR:
         self.model_ft = torchvision.models.resnet50(pretrained=False)
         self.num_ftrs = self.model_ft.fc.in_features
         self.model_ft.fc = nn.Linear(self.num_ftrs, self.num_classes)
-        self.model_ft.load_state_dict(torch.load('data/comnist.dict', map_location=torch.device('cpu')))
+        self.model_ft.load_state_dict(torch.load(self.data_dir+'/comnist.dict', map_location=torch.device('cpu')))
         self.model_ft.eval()
 
     def __initAnswCNN__(self):
         self.AnswModel = torchvision.models.resnet18(pretrained=False)
         self.numansw_ftrs = self.AnswModel.fc.in_features
         self.AnswModel.fc = nn.Linear(self.numansw_ftrs, 2)
-        self.AnswModel.load_state_dict(torch.load('data/answ.dat', map_location=torch.device('cpu')))
+        self.AnswModel.load_state_dict(torch.load(self.data_dir+'/answ.dat', map_location=torch.device('cpu')))
         self.AnswModel.eval()
 
     def remove_isolated_pixels(self, image):
